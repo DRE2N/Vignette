@@ -39,7 +39,7 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
     /**
      * Creates a new InventoryButton directly from an {@link org.bukkit.inventory.ItemStack}.
      * <p>
-     * All values that {@link org.bukkit.inventory.ItemStack#copy()} supports are supported for a button.
+     * All values that {@link org.bukkit.inventory.ItemStack#clone()} supports are supported for a button.
      *
      * @param itemStack the ItemStack
      */

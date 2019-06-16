@@ -28,7 +28,7 @@ public interface PlayerViewable {
      * <p>
      * Ignores Players who are not online.
      * <p>
-     * Triggers all associated {@link de.erethon.vignette.api.component.ContextModifier}s
+     * Triggers all associated {@link de.erethon.vignette.api.context.ContextModifier}s
      *
      * @throws IllegalStateException if the GUI is not registered
      * @param players the Players
@@ -40,7 +40,7 @@ public interface PlayerViewable {
      * <p>
      * Ignores Players who are not online.
      * <p>
-     * Triggers all associated {@link de.erethon.vignette.api.component.ContextModifier}s
+     * Triggers all associated {@link de.erethon.vignette.api.context.ContextModifier}s
      *
      * @throws IllegalStateException if the GUI is not registered
      * @param requestParticipators the RequestParticipators
