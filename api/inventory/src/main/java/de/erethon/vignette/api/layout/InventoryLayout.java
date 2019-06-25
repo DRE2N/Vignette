@@ -15,11 +15,7 @@ package de.erethon.vignette.api.layout;
 import de.erethon.vignette.api.InventoryGUI;
 import de.erethon.vignette.api.component.Component;
 import de.erethon.vignette.api.component.InventoryButton;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -28,44 +24,10 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Daniel Saukel
  */
-public abstract class InventoryLayout implements Layout<InventoryGUI> {
+public interface InventoryLayout extends Layout<InventoryGUI> {
 
-    public static final int LINE_LENGTH = 9;
-    public static final int CENTER_SLOT = 4;
-
-    private InventoryGUI gui;
-
-    protected Component<?, InventoryGUI>[] components;
-    protected int slot;
-
-    /**
-     * @param gui  the GUI
-     * @param size the amount of slots in the GUI. Must be a multiple of 9
-     */
-    protected InventoryLayout(InventoryGUI gui, int size) {
-        components = new Component[size];
-        this.gui = gui;
-    }
-
-    protected InventoryLayout(InventoryGUI gui, InventoryLayout layout) {
-        this(gui, layout.getSize());
-        slot = layout.slot;
-        for (int i = 0; i < getSize(); i++) {
-            if (layout.components[i] != null) {
-                components[i] = (Component<?, InventoryGUI>) layout.components[i].copy();
-            }
-        }
-    }
-
-    @Override
-    public InventoryGUI getGUI() {
-        return gui;
-    }
-
-    @Override
-    public Collection<Component<?, InventoryGUI>> getComponents() {
-        return Arrays.asList(components);
-    }
+    static final int LINE_LENGTH = 9;
+    static final int CENTER_SLOT = 4;
 
     /**
      * Returns the component in a specific slot.
@@ -73,15 +35,13 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      * @param slot the slot
      * @return the component in a specific slot
      */
-    public Component<?, InventoryGUI> getComponent(int slot) {
-        return components[slot];
-    }
+    Component<?, InventoryGUI> getComponent(int slot);
 
     @Override
-    public boolean add(Component<?, InventoryGUI> component) {
-        if (currentSlot() == -1) {
+    default boolean add(Component<?, InventoryGUI> component) {
+        if (!hasSpaceLeft()) {
             return false;
-        } else if (components[currentSlot()] == null) {
+        } else if (getCurrent() == null) {
             setToCurrent(component);
             return true;
         } else {
@@ -97,25 +57,15 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      * @param filter    a predicate which returns true for slots to be filled
      * @return if adding to one or more slots was successful
      */
-    public boolean fillIf(Component<?, InventoryGUI> component, Predicate<Integer> filter) {
-        boolean success = false;
-        for (int i = 0; i < getSize(); i++) {
-            if (filter.test(i)) {
-                components[i] = component;
-                success = true;
-            }
-        }
-        return success;
-    }
+    boolean fillIf(Component<?, InventoryGUI> component, Predicate<Integer> filter);
 
     /**
      * Adds a component to the current slot.
      *
      * @param component the component
+     * @return if setting the Component was successful
      */
-    public void setToCurrent(Component<?, InventoryGUI> component) {
-        components[currentSlot()] = component;
-    }
+    boolean setToCurrent(Component<?, InventoryGUI> component);
 
     /**
      * Adds a Component to a specific slot in the GUI.
@@ -124,10 +74,9 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      *
      * @param slot      the slot
      * @param component the Component to add
+     * @return if setting the Component was successful
      */
-    public void set(int slot, Component<?, InventoryGUI> component) {
-        components[slot] = component;
-    }
+    boolean set(int slot, Component<?, InventoryGUI> component);
 
     /**
      * Attempts to shift a Component from a slot to another.
@@ -140,15 +89,7 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      * @param targetSlot the slot where the Component shall be moved to
      * @return if the Component could be added to the target slot
      */
-    public boolean shift(int sourceSlot, int targetSlot) {
-        Component<?, InventoryGUI> source = components[sourceSlot];
-        components[sourceSlot] = null;
-        if (components[targetSlot] != null) {
-            return false;
-        }
-        components[targetSlot] = source;
-        return true;
-    }
+    boolean shift(int sourceSlot, int targetSlot);
 
     /**
      * Attempts to shift a Component from a slot to another.
@@ -161,7 +102,7 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      * @param relativeTargetSlot the relative amount of slot between the source and the target
      * @return if the Component could be added to the target slot
      */
-    public boolean shiftRelatively(int sourceSlot, int relativeTargetSlot) {
+    default boolean shiftRelatively(int sourceSlot, int relativeTargetSlot) {
         return shift(sourceSlot, sourceSlot + relativeTargetSlot);
     }
 
@@ -176,7 +117,7 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      * @param relativeTargetSlot the relative amount of slot between the source and the target
      * @return if at least Component could be added to the target slot
      */
-    public boolean shiftRelativelyIf(Predicate<Integer> filter, int relativeTargetSlot) {
+    default boolean shiftRelativelyIf(Predicate<Integer> filter, int relativeTargetSlot) {
         boolean success = false;
         for (int i = 0; i < getSize(); i++) {
             if (filter.test(i) && shiftRelatively(i, relativeTargetSlot)) {
@@ -186,30 +127,16 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
         return success;
     }
 
-    @Override
-    public boolean remove(Component<?, InventoryGUI> component) {
-        for (int i = 0; i < components.length; i++) {
-            Component c = components[i];
-            if (c != null && c.equals(component)) {
-                components[i] = null;
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * Returns the amount of slots in the inventory.
      *
      * @return the amount of slots in the inventory
      */
-    public int getSize() {
-        return components.length;
-    }
+    int getSize();
 
     @Override
-    public boolean hasSpaceLeft() {
-        return slot != -1;
+    default boolean hasSpaceLeft() {
+        return currentSlot() != -1;
     }
 
     /**
@@ -218,13 +145,7 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      * @param itemStack the ItemStack
      * @return the first InventoryButton that is equal to the ItemStack
      */
-    public InventoryButton getButton(ItemStack itemStack) {
-        Optional<Component<?, InventoryGUI>> button = Stream.of(components)
-                .filter(c -> c instanceof InventoryButton)
-                .filter(c -> ((InventoryButton) c).is(itemStack))
-                .findFirst();
-        return button.isPresent() ? (InventoryButton) button.get() : null;
-    }
+    InventoryButton getButton(ItemStack itemStack);
 
     /**
      * Returns the first InventoryButton which represents the {@link org.bukkit.inventory.ItemStack}.
@@ -235,13 +156,14 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      * @param contextPlayer the Player that is used to check the button's form modified by {@link de.erethon.vignette.api.context.ContextModifier}s.
      * @return the first InventoryButton that is equal to the ItemStack
      */
-    public InventoryButton getButton(ItemStack itemStack, Player contextPlayer) {
-        Optional<Component<?, InventoryGUI>> button = Stream.of(components)
-                .filter(c -> c instanceof InventoryButton)
-                .filter(c -> ((InventoryButton) c).is(itemStack, contextPlayer))
-                .findFirst();
-        return button.isPresent() ? (InventoryButton) button.get() : null;
-    }
+    InventoryButton getButton(ItemStack itemStack, Player contextPlayer);
+
+    /**
+     * Returns the Component at the {@link #currentSlot()}.
+     *
+     * @return the Component at the {@link #currentSlot()}
+     */
+    Component<?, InventoryGUI> getCurrent();
 
     /**
      * Returns the slot where the current button to add will be inserted.
@@ -249,9 +171,7 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      * @return the slot where the current button to add will be inserted;
      *         -1 if no space is left
      */
-    public int currentSlot() {
-        return slot;
-    }
+    int currentSlot();
 
     /**
      * Returns the slot where the next button to add will be inserted.
@@ -261,6 +181,6 @@ public abstract class InventoryLayout implements Layout<InventoryGUI> {
      * @return the slot where the next button to add will be inserted;
      *         -1 if no space is left
      */
-    public abstract int nextSlot();
+    int nextSlot();
 
 }

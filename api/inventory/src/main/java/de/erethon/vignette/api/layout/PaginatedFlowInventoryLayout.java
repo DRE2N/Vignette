@@ -14,66 +14,39 @@ package de.erethon.vignette.api.layout;
 
 import de.erethon.vignette.api.InventoryGUI;
 import de.erethon.vignette.api.PaginatedInventoryGUI;
-import de.erethon.vignette.api.pagination.PaginatedInventoryLayout;
-import de.erethon.vignette.api.pagination.PaginatedInventoryLayout.PaginationButtonPosition;
 
 /**
  * A basic paginated {@link InventoryLayout} that adds {@link de.erethon.vignette.api.component.Component}s in dextrograde reading direction.
  *
  * @author Daniel Saukel
  */
-public class PaginatedFlowInventoryLayout extends FlowInventoryLayout implements PaginatedInventoryLayout {
-
-    private PaginationButtonPosition paginationButtonPosition;
-    private boolean switchButtonLinePlaceholdersEnabled;
+public class PaginatedFlowInventoryLayout extends PaginatedInventoryLayout {
 
     public PaginatedFlowInventoryLayout(PaginatedInventoryGUI gui, int size, PaginationButtonPosition paginationButtonPosition) {
-        super(gui, size);
-        this.paginationButtonPosition = paginationButtonPosition;
-        set(getSwitchButtonSlot(paginationButtonPosition, size, false), PREVIOUS_PAGE);
-        set(getSwitchButtonSlot(paginationButtonPosition, size, true), NEXT_PAGE);
+        super(gui, size, paginationButtonPosition);
     }
 
-    protected PaginatedFlowInventoryLayout(InventoryGUI gui, PaginatedFlowInventoryLayout layout) {
+    public PaginatedFlowInventoryLayout(PaginatedInventoryGUI gui, PaginatedFlowInventoryLayout layout) {
         super(gui, layout);
-        paginationButtonPosition = layout.paginationButtonPosition;
-        switchButtonLinePlaceholdersEnabled = layout.switchButtonLinePlaceholdersEnabled;
-    }
-
-    @Override
-    public boolean areSwitchButtonLinePlaceholdersEnabled() {
-        return switchButtonLinePlaceholdersEnabled;
-    }
-
-    @Override
-    public void setSwitchButtonLinePlaceholdersEnabled(boolean enabled) {
-        switchButtonLinePlaceholdersEnabled = enabled;
-        if (enabled) {
-            int sbslot = getSwitchButtonSlot(paginationButtonPosition, getSize(), false);
-            set(sbslot + 1, PLACEHOLDER);
-            set(sbslot + 2, PLACEHOLDER);
-            set(sbslot + 3, PLACEHOLDER);
-            set(sbslot + 4, PLACEHOLDER);
-            set(sbslot + 5, PLACEHOLDER);
-            set(sbslot + 6, PLACEHOLDER);
-            set(sbslot + 7, PLACEHOLDER);
-        } else {
-            removeIf(c -> c.equals(PLACEHOLDER));
-        }
     }
 
     @Override
     public int nextSlot() {
         slot++;
         if (slot >= getSize()) {
-            slot = -1;
+            newPage();
+            page++;
+            slot = 0;
         }
         return slot;
     }
 
     @Override
     public PaginatedFlowInventoryLayout copy(InventoryGUI gui) {
-        return new PaginatedFlowInventoryLayout(gui, this);
+        if (!(gui instanceof PaginatedInventoryGUI)) {
+            throw new IllegalArgumentException("GUI is not a PaginatedInventoryGUI");
+        }
+        return new PaginatedFlowInventoryLayout((PaginatedInventoryGUI) gui, this);
     }
 
 }

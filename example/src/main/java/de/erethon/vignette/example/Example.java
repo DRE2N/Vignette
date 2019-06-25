@@ -14,14 +14,16 @@ package de.erethon.vignette.example;
 
 import de.erethon.vignette.api.GUI;
 import de.erethon.vignette.api.InventoryGUI;
+import de.erethon.vignette.api.Paginated;
 import de.erethon.vignette.api.PaginatedInventoryGUI;
+import de.erethon.vignette.api.SingleInventoryGUI;
 import de.erethon.vignette.api.VignetteAPI;
 import de.erethon.vignette.api.component.InventoryButton;
 import de.erethon.vignette.api.component.InventoryButtonBuilder;
 import de.erethon.vignette.api.layout.CenteredInventoryLayout;
 import de.erethon.vignette.api.layout.FlowInventoryLayout;
 import de.erethon.vignette.api.layout.PaginatedFlowInventoryLayout;
-import de.erethon.vignette.api.pagination.PaginatedInventoryLayout.PaginationButtonPosition;
+import de.erethon.vignette.api.layout.PaginatedInventoryLayout.PaginationButtonPosition;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -35,11 +37,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Example extends JavaPlugin {
 
     public static final InventoryGUI[] TEST = new InventoryGUI[]{
-        new InventoryGUI("Title"),
-        new PaginatedInventoryGUI(ChatColor.DARK_RED + "Dark Red Title"),
-        new InventoryGUI(ChatColor.DARK_RED + "Centered GUI Test"),
-        new InventoryGUI(ChatColor.GOLD + "Overloaded centered GUI Test"),
-        new InventoryGUI(ChatColor.BLUE + "Context Modifier Test")
+        new SingleInventoryGUI("Title"),
+        new PaginatedInventoryGUI(ChatColor.DARK_RED + "Subsidiary title / pagination Test"),
+        new SingleInventoryGUI(ChatColor.DARK_RED + "Centered GUI Test"),
+        new SingleInventoryGUI(ChatColor.GOLD + "Overloaded centered GUI Test"),
+        new SingleInventoryGUI(ChatColor.BLUE + "Context Modifier Test"),
+        new PaginatedInventoryGUI(ChatColor.BLUE + "Context Modifier + Pagination Test")
     };
 
     static {
@@ -55,6 +58,21 @@ public class Example extends JavaPlugin {
         );
         TEST[1].setLayout(new PaginatedFlowInventoryLayout((PaginatedInventoryGUI) TEST[1], 9, PaginationButtonPosition.CENTER));
         TEST[1].add(new InventoryButton(Material.MINECART, ChatColor.GOLD + "This is a button", ChatColor.GOLD + "with multiple", ChatColor.GOLD + "lines of text"));
+        TEST[1].add(new InventoryButtonBuilder()
+                .icon(Material.CLOCK)
+                .lines("This item is stealable")
+                .stealable(true)
+                .build()
+        );
+        for (int page = 0, slot = 3; slot < 9 && page < 2; slot++) {
+            if (slot == 8) {
+                slot = 1;
+                page++;
+            }
+            TEST[1].add(new InventoryButton(Material.DIAMOND, ChatColor.AQUA + "Page " + page + " - Slot " + slot));
+        }
+        ((Paginated) TEST[1]).setTitle(1, "This is a title for page 1");
+        TEST[1].register();
         TEST[2].setLayout(new CenteredInventoryLayout(TEST[2], 18));
         TEST[2].add(new InventoryButton("0-0"));
         TEST[2].add(new InventoryButton("0-1"));
@@ -69,16 +87,33 @@ public class Example extends JavaPlugin {
         TEST[2].add(new InventoryButton("1-1"));
         TEST[2].add(new InventoryButton("1-2"));
         TEST[2].add(new InventoryButton("1-3"));
+        TEST[2].register();
         TEST[3].setLayout(new CenteredInventoryLayout(TEST[3], 9));
         for (int i = 0; i <= 12; i++) {
             TEST[3].add(new InventoryButton("Test"));
         }
+        TEST[3].register();
         TEST[4].setLayout(new FlowInventoryLayout(TEST[4], 9));
         TEST[4].addContextModifier((t, p) -> t.setTitle("You are" + (p.isOp() ? " " : " NOT ") + "OP"));
         TEST[4].add(new InventoryButtonBuilder()
                 .contextModifier((t, p) -> t.setTitle("You are" + (p.isOp() ? " " : " NOT ") + "OP"))
                 .build()
         );
+        TEST[4].register();
+        TEST[5].setLayout(new PaginatedFlowInventoryLayout((PaginatedInventoryGUI) TEST[5], 45, PaginationButtonPosition.BOTTOM));
+        for (int page = 0, slot = 0; slot < 44 && page < 3; slot++) {
+            if (slot == 43) {
+                slot = 0;
+                page++;
+            }
+            TEST[5].add(new InventoryButton(Material.DIAMOND, ChatColor.AQUA + "Page " + page + " - Slot " + slot));
+        }
+        TEST[5].addContextModifier((t, p) -> t.setTitle("You are" + (p.isOp() ? " " : " NOT ") + "OP"));
+        TEST[5].add(new InventoryButtonBuilder()
+                .contextModifier((t, p) -> t.setTitle("You are" + (p.isOp() ? " " : " NOT ") + "OP"))
+                .build()
+        );
+        TEST[5].register();
     }
 
     @Override

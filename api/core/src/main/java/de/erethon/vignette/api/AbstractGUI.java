@@ -51,7 +51,6 @@ public abstract class AbstractGUI<T extends AbstractGUI<T>> implements GUI<T> {
         if (gui.isRegistered()) {
             register();
         }
-        viewers = gui.viewers;
     }
 
     @Override

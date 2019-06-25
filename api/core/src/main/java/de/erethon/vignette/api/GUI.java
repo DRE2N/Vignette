@@ -155,4 +155,12 @@ public interface GUI<T extends GUI<T>> extends Contextualized<T>, PlayerViewable
         return VignetteAPI.isRegistered(this);
     }
 
+    /**
+     * Returns an exact copy of the GUI.
+     *
+     * @return an exact copy of the GUI
+     */
+    @Override
+    T copy();
+
 }

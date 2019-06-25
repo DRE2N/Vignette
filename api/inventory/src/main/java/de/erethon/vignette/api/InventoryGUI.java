@@ -12,36 +12,32 @@
  */
 package de.erethon.vignette.api;
 
-import de.erethon.vignette.api.component.Component;
 import de.erethon.vignette.api.component.InventoryButton;
 import de.erethon.vignette.api.layout.InventoryLayout;
 import de.erethon.vignette.api.layout.Layout;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * A chest inventory based GUI.
+ * Shared code of chest inventory based GUIs.
  *
  * @author Daniel Saukel
  */
-public class InventoryGUI extends AbstractGUI<InventoryGUI> {
+public abstract class InventoryGUI extends AbstractGUI<InventoryGUI> {
 
-    private Inventory openedInventory;
-
-    public InventoryGUI() {
+    protected InventoryGUI() {
         super();
     }
 
     /**
      * @param title the title
      */
-    public InventoryGUI(String title) {
+    protected InventoryGUI(String title) {
         super(title);
     }
 
-    private InventoryGUI(InventoryGUI gui) {
+    protected InventoryGUI(InventoryGUI gui) {
         super(gui);
     }
 
@@ -64,22 +60,15 @@ public class InventoryGUI extends AbstractGUI<InventoryGUI> {
         return ((InventoryLayout) getLayout()).getSize();
     }
 
-    @Override
-    public void close(Player... players) {
-        for (Player player : players) {
-            if (viewers.contains(player)) {
-                viewers.remove(player);
-                player.closeInventory();
-            }
-        }
-    }
-
-    @Override
-    public void open(Player... players) {
-        for (Player player : players) {
-            viewers.add(player);
-            player.openInventory(createInventory(player));
-        }
+    /**
+     * Removes a player from the viewers list without closing the inventory.
+     *
+     * @param player the player to remove from the viewers list
+     * @deprecated for internal use only; use {@link #close(org.bukkit.entity.Player...)} instead.
+     */
+    @Deprecated
+    public void removeViewer(Player player) {
+        viewers.remove(player);
     }
 
     /**
@@ -106,57 +95,54 @@ public class InventoryGUI extends AbstractGUI<InventoryGUI> {
     }
 
     /**
-     * Creates the inventory.
+     * Checks if the GUI is a representation of an {@link org.bukkit.inventory.Inventory}.
      *
-     * @param viewer the viewer
-     * @return the inventory
+     * @param rawInventory an Inventory
+     * @return if the Inventory is a representation of this GUI
      */
-    public Inventory createInventory(Player viewer) {
-        InventoryGUI gui;
-        boolean copied;
-        if (!getContextModifiers().isEmpty()) {
-            gui = copy();
-            gui.setTransient(true);
-            gui.applyAllContextModifiers(viewer);
-            copied = true;
+    public abstract boolean is(Inventory rawInventory);
+
+    /**
+     * Checks if the GUI is a representation of an {@link org.bukkit.inventory.Inventory}.
+     * <p>
+     * If the GUI has one or more {@link de.erethon.vignette.api.context.ContextModifier}s and if it is not a representation of the Inventory
+     * in the GUI's form not modified by its ContextModifiers, a copy of the GUI is made and the modifiers are applied to this copy for reference
+     * to check if the modified form is a representation of the Inventory.
+     *
+     * @param rawInventory  an Inventory
+     * @param contextPlayer the Player
+     * @return if the Inventory is a representation of this GUI
+     */
+    public boolean is(Inventory rawInventory, Player contextPlayer) {
+        boolean is = is(rawInventory);
+        if (is) {
+            return true;
+
+        } else if (!getContextModifiers().isEmpty()) {
+            InventoryGUI modified = copy();
+            modified.applyAllContextModifiers(contextPlayer);
+            return modified.is(rawInventory);
+
         } else {
-            gui = this;
-            copied = false;
+            return false;
         }
-        gui.openedInventory = Bukkit.createInventory(null, gui.getSize(), gui.getTitle());
-
-        InventoryLayout layout = (InventoryLayout) gui.getLayout();
-        for (int i = 0; i < layout.getSize(); i++) {
-            Component comp = layout.getComponent(i);
-            if (!(comp instanceof InventoryButton)) {
-                continue;
-            }
-            InventoryButton button = (InventoryButton) comp;
-            if (!button.getContextModifiers().isEmpty()) {
-                // If the GUI is just a transient copy anyway, there is no need to copy the buttons.
-                if (!copied) {
-                    button = ((InventoryButton) comp).copy();
-                }
-                button.applyAllContextModifiers(viewer);
-            }
-            gui.openedInventory.setItem(i, button.createItemStack());
-        }
-
-        return gui.openedInventory;
     }
 
     /**
-     * Returns the last {@link org.bukkit.inventory.Inventory} created from this GUI.
+     * Returns a transient copy if the GUI has context modifiers and applies all of them; returns the GUI itself if not.
      *
-     * @return the last {@link org.bukkit.inventory.Inventory} created from this GUI
+     * @param viewer the viewer
+     * @return a transient copy if the GUI has context modifiers and applies all of them; returns the GUI itself if not
      */
-    public Inventory getOpenedInventory() {
-        return openedInventory;
-    }
-
-    @Override
-    public InventoryGUI copy() {
-        return new InventoryGUI(this);
+    public InventoryGUI getContextualizedCopy(Player viewer) {
+        if (!getContextModifiers().isEmpty()) {
+            InventoryGUI gui = copy();
+            gui.setTransient(true);
+            gui.applyAllContextModifiers(viewer);
+            return gui;
+        } else {
+            return this;
+        }
     }
 
 }

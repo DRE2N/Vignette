@@ -10,19 +10,16 @@
  * You should have received a copy of the CC0 Public Domain Dedication
  * along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
  */
-package de.erethon.vignette.api.pagination;
+package de.erethon.vignette.api;
 
-import de.erethon.vignette.api.PlayerViewable;
-import java.util.Stack;
 import org.bukkit.entity.Player;
 
 /**
  * Represents a graphical user interface with multiple pages.
  *
- * @param <T> the Countable implementation type
  * @author Daniel Saukel
  */
-public interface Paginated<T extends Countable> extends PlayerViewable {
+public interface Paginated extends PlayerViewable {
 
     /**
      * Returns if the components of this GUI are automatically added to the next page if no space is left, or to the last one if space is freed.
@@ -40,22 +37,15 @@ public interface Paginated<T extends Countable> extends PlayerViewable {
     void setComponentMoveUpEnabled(boolean moveUp);
 
     /**
-     * Returns the pages of this GUI.
+     * Returns the amount of pages.
      *
-     * @return the pages of this GUI
+     * @return the amount of pages
      */
-    Stack<T> getPages();
-
-    /**
-     * Creates a new page with the specifications of this GUI and adds it to the end of the stack.
-     *
-     * @return a new page with the specifications of this GUI
-     */
-    T newPage();
+    int getPages();
 
     @Override
     default void open(Player... players) {
-        open(0);
+        open(0, players);
     }
 
     /**
@@ -67,5 +57,29 @@ public interface Paginated<T extends Countable> extends PlayerViewable {
      * @param players the Players
      */
     void open(int page, Player... players);
+
+    /**
+     * Returns the title text of a specific page.
+     *
+     * @param page the page
+     * @return the title text of a specific page
+     */
+    String getTitle(int page);
+
+    /**
+     * Sets the title of a specific page to a text.
+     *
+     * @param page  the page
+     * @param title the title text to set
+     */
+    void setTitle(int page, String title);
+
+    /**
+     * Returns the last page opened by this player; null if never opened.
+     *
+     * @param player the player who opened the GUI
+     * @return the last page opened by this player; null if never opened
+     */
+    Integer getOpenedPage(Player player);
 
 }

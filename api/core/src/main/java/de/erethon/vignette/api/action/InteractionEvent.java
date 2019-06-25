@@ -12,6 +12,8 @@
  */
 package de.erethon.vignette.api.action;
 
+import de.erethon.vignette.api.GUI;
+import de.erethon.vignette.api.component.Button;
 import org.bukkit.entity.Player;
 
 /**
@@ -21,16 +23,38 @@ import org.bukkit.entity.Player;
  */
 public class InteractionEvent {
 
+    private GUI gui;
+    private Button button;
     private Player player;
     private Action action;
 
-    public InteractionEvent(Player player, Action action) {
+    public InteractionEvent(GUI gui, Button button, Player player, Action action) {
+        this.gui = gui;
+        this.button = button;
         this.player = player;
         this.action = action;
     }
 
     /**
-     * Returns the player who interacted with the GUI
+     * Returns the GUI that was interacted with.
+     *
+     * @return the GUI that was interacted with
+     */
+    public GUI getGUI() {
+        return gui;
+    }
+
+    /**
+     * Returns the Button that was interacted with.
+     *
+     * @return the Button that was interacted with
+     */
+    public Button getButton() {
+        return button;
+    }
+
+    /**
+     * Returns the player who interacted with the GUI.
      *
      * @return the player who interacted with the GUI
      */
@@ -39,7 +63,7 @@ public class InteractionEvent {
     }
 
     /**
-     * Returns an Action that matchs the action that occurred
+     * Returns an Action that matchs the action that occurred.
      *
      * @return an Action that matchs the action that occurred
      */

@@ -12,18 +12,34 @@
  */
 package de.erethon.vignette.api;
 
-import de.erethon.vignette.api.pagination.Paginated;
-import java.util.Stack;
+import de.erethon.vignette.api.component.Component;
+import de.erethon.vignette.api.component.InventoryButton;
+import de.erethon.vignette.api.layout.PaginatedInventoryLayout;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 /**
  * A chest inventory based paginated GUI.
  *
  * @author Daniel Saukel
  */
-public class PaginatedInventoryGUI extends InventoryGUI implements Paginated<InventoryGUIPage> {
+public class PaginatedInventoryGUI extends InventoryGUI implements Paginated {
 
-    private Stack<InventoryGUIPage> pages;
+    /**
+     * @deprecated for internal use only
+     */
+    @Deprecated
+    public static Player exclude;
+
+    private List<Inventory> openedInventories = new ArrayList<>();
+    private List<String> titles = new ArrayList<>();
+    private Map<Player, Integer> openedPage = new HashMap<>();
     private boolean componentMoveUpEnabled;
 
     public PaginatedInventoryGUI() {
@@ -37,6 +53,34 @@ public class PaginatedInventoryGUI extends InventoryGUI implements Paginated<Inv
         super(title);
     }
 
+    public PaginatedInventoryGUI(PaginatedInventoryGUI gui) {
+        super(gui);
+    }
+
+    @Override
+    public int getPages() {
+        return ((PaginatedInventoryLayout) getLayout()).getPages();
+    }
+
+    @Override
+    public String getTitle(int page) {
+        if (titles.size() > page && page > 0) {
+            String title = titles.get(page);
+            if (title != null) {
+                return title;
+            }
+        }
+        return getTitle();
+    }
+
+    @Override
+    public void setTitle(int page, String title) {
+        if (titles.size() <= page) {
+            titles = Arrays.asList(titles.toArray(new String[page + 1]));
+        }
+        titles.set(page, title);
+    }
+
     @Override
     public boolean isComponentMoveUpEnabled() {
         return componentMoveUpEnabled;
@@ -47,23 +91,116 @@ public class PaginatedInventoryGUI extends InventoryGUI implements Paginated<Inv
         componentMoveUpEnabled = moveUp;
     }
 
-    @Override
-    public Stack<InventoryGUIPage> getPages() {
-        return pages;
-    }
-
-    @Override
-    public InventoryGUIPage newPage() {
-        return pages.push(new InventoryGUIPage(pages.size()));
-    }
-
+    /**
+     * Opens a specific page of the GUI to an array of players and adds them to the viewers Collection.
+     * <p>
+     * Ignores Players who are not online.
+     * <p>
+     * Triggers all associated {@link de.erethon.vignette.api.context.ContextModifier}s.
+     *
+     * @throws IllegalStateException if the GUI is not registered
+     * @param page    the page index to open. If the value is higher than or equal to {@link #getPages()},
+     *                the first page will be opened; if it is lower than 0, the last page will be opened.
+     * @param players the Players
+     */
     @Override
     public void open(int page, Player... players) {
-        GUI gui = pages.get(page);
-        if (gui == null) {
-            throw new IllegalArgumentException(this + " does not have " + page + " pages");
+        if (!isRegistered()) {
+            throw new IllegalStateException("The GUI " + toString() + " is not registered");
         }
-        gui.open(players);
+        if (page >= getPages()) {
+            page = 0;
+        } else if (page < 0) {
+            page = getPages() - 1;
+        }
+        for (Player player : players) {
+            if (viewers.contains(player)) {
+                openedPage.put(player, page);
+                exclude = player;
+                player.openInventory(openedInventories.get(page));
+                exclude = null;
+            } else {
+                PaginatedInventoryGUI copy = ((PaginatedInventoryGUI) getContextualizedCopy(player));
+                copy.viewers.add(player);
+                copy.openedPage.put(player, page);
+                player.openInventory(copy.createInventories(player).get(page));
+            }
+        }
+    }
+
+    @Override
+    public void close(Player... players) {
+        for (Player player : players) {
+            if (viewers.contains(player)) {
+                openedPage.remove(player);
+                viewers.remove(player);
+                player.closeInventory();
+            }
+        }
+    }
+
+    @Override
+    public void removeViewer(Player player) {
+        super.removeViewer(player);
+        openedPage.remove(player);
+    }
+
+    /**
+     * Creates the inventories for each page.
+     * <p>
+     * This should only be done if the inventory is a {@link #getContextualizedCopy(Player) contextualized copy}.
+     *
+     * @param viewer the viewer
+     * @return the inventory
+     */
+    private List<Inventory> createInventories(Player viewer) {
+        PaginatedInventoryLayout layout = (PaginatedInventoryLayout) getLayout();
+        for (int page = 0; page < getPages(); page++) {
+            openedInventories.add(Bukkit.createInventory(null, getSize(), getTitle(page)));
+            for (int slot = 0; slot < getSize(); slot++) {
+                Component<?, InventoryGUI> comp = layout.getComponent(page, slot);
+                if (!(comp instanceof InventoryButton)) {
+                    continue;
+                }
+                InventoryButton button = (InventoryButton) comp;
+                if (!button.getContextModifiers().isEmpty()) {
+                    // If the GUI is just a transient copy anyway, there is no need to copy the buttons.
+                    if (!isTransient()) {
+                        button = ((InventoryButton) comp).copy();
+                    }
+                    button.applyAllContextModifiers(viewer);
+                }
+                openedInventories.get(page).setItem(slot, button.createItemStack());
+            }
+        }
+        return openedInventories;
+    }
+
+    /**
+     * Returns a List of each {@link org.bukkit.inventory.Inventory} created per page from this GUI.
+     *
+     * @return a List of each {@link org.bukkit.inventory.Inventory} created per page from this GUI
+     */
+    public List<Inventory> getOpenedInventories() {
+        return openedInventories;
+    }
+
+    @Override
+    public Integer getOpenedPage(Player player) {
+        return openedPage.get(player);
+    }
+
+    @Override
+    public boolean is(Inventory rawInventory) {
+        if (rawInventory == null) {
+            return false;
+        }
+        return openedInventories.contains(rawInventory);
+    }
+
+    @Override
+    public PaginatedInventoryGUI copy() {
+        return new PaginatedInventoryGUI(this);
     }
 
 }

@@ -25,7 +25,7 @@ import java.util.Arrays;
  *
  * @author Daniel Saukel
  */
-public class CenteredInventoryLayout extends InventoryLayout {
+public class CenteredInventoryLayout extends SingleInventoryLayout {
 
     private static final boolean[][] STATES = new boolean[][]{
         {true, true, true, true, true, true, true, true, true},
@@ -47,7 +47,7 @@ public class CenteredInventoryLayout extends InventoryLayout {
         slot = CENTER_SLOT;
     }
 
-    protected CenteredInventoryLayout(InventoryGUI gui, CenteredInventoryLayout layout) {
+    public CenteredInventoryLayout(InventoryGUI gui, CenteredInventoryLayout layout) {
         super(gui, layout);
     }
 
@@ -58,7 +58,7 @@ public class CenteredInventoryLayout extends InventoryLayout {
             return slot;
         }
 
-        int filled = getLastSlotOfLastFilledLine();
+        int firstInLine = slot - slot % LINE_LENGTH;// First slot of first line that isn't filled
         boolean[] scan = scan(slot / LINE_LENGTH);
         int sid = -1;
         for (boolean[] state : STATES) {
@@ -67,18 +67,18 @@ public class CenteredInventoryLayout extends InventoryLayout {
                 continue;
             }
             if (state[CENTER_SLOT]) {
-                shiftRelativelyIf(i -> i > CENTER_SLOT + filled + 1 && i <= filled + LINE_LENGTH, -1);
+                shiftRelativelyIf(i -> i > CENTER_SLOT + firstInLine && i < firstInLine + LINE_LENGTH, -1);
             } else {
                 if (!state[0]) {
-                    slot = filled + 1 + CENTER_SLOT + LINE_LENGTH;
+                    slot = firstInLine + CENTER_SLOT + LINE_LENGTH;
                     if (slot >= getSize()) {
                         slot = -1;
                     }
                     break;
                 }
-                shiftRelativelyIf(i -> i > filled + 1 && i <= filled + CENTER_SLOT + 1, -1);
+                shiftRelativelyIf(i -> i > firstInLine && i <= firstInLine + CENTER_SLOT, -1);
             }
-            slot = filled + 1 + NEW_NEXT_SLOT[sid];
+            slot = firstInLine + NEW_NEXT_SLOT[sid];
             break;
         }
         return slot;
@@ -92,10 +92,6 @@ public class CenteredInventoryLayout extends InventoryLayout {
             j++;
         }
         return scan;
-    }
-
-    int getLastSlotOfLastFilledLine() {
-        return slot - slot % LINE_LENGTH - 1;
     }
 
     @Override

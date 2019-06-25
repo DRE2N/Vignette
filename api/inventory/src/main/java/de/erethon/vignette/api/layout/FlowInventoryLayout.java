@@ -19,7 +19,7 @@ import de.erethon.vignette.api.InventoryGUI;
  *
  * @author Daniel Saukel
  */
-public class FlowInventoryLayout extends InventoryLayout {
+public class FlowInventoryLayout extends SingleInventoryLayout {
 
     public FlowInventoryLayout(InventoryGUI gui, int size) {
         super(gui, size);

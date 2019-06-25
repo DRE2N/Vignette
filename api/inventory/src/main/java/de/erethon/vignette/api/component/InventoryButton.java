@@ -285,7 +285,7 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
      * <p>
      * Modifying the returned stack does not modify the button itself.
      *
-     * @return a raw {@link org.bukkit.inventory.ItemStack} to use in an inventory GUI.
+     * @return a raw {@link org.bukkit.inventory.ItemStack} to use in an inventory GUI
      */
     public ItemStack createItemStack() {
         return itemStack.clone();
@@ -295,7 +295,7 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
      * Checks if the button is a representation of an {@link org.bukkit.inventory.ItemStack}.
      *
      * @param rawButton an ItemStack in an inventory GUI
-     * @return if the ItemStack is a representation of this button.
+     * @return if the ItemStack is a representation of this button
      */
     public boolean is(ItemStack rawButton) {
         return itemStack.equals(rawButton);
@@ -310,7 +310,7 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
      *
      * @param rawButton     an ItemStack in an inventory GUI
      * @param contextPlayer the Player
-     * @return if the ItemStack is a representation of this button.
+     * @return if the ItemStack is a representation of this button
      */
     public boolean is(ItemStack rawButton, Player contextPlayer) {
         boolean is = is(rawButton);

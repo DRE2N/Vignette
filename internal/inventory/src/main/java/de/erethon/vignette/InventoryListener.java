@@ -13,6 +13,7 @@
 package de.erethon.vignette;
 
 import de.erethon.vignette.api.InventoryGUI;
+import de.erethon.vignette.api.PaginatedInventoryGUI;
 import de.erethon.vignette.api.VignetteAPI;
 import de.erethon.vignette.api.action.Action;
 import de.erethon.vignette.api.action.InteractionEvent;
@@ -22,6 +23,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * @author Daniel Saukel
@@ -29,7 +31,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 public class InventoryListener implements Listener {
 
     @EventHandler
-    public void onClick(InventoryClickEvent event) {
+    public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player)) {
             return;
         }
@@ -47,20 +49,29 @@ public class InventoryListener implements Listener {
                 player.playSound(player.getLocation(), button.getSound(), 1f, 1f);
             }
             if (button.getInteractionListener() != null) {
-                button.getInteractionListener().onAction(new InteractionEvent(player, Action.CLICK));// TO DO
+                button.getInteractionListener().onAction(new InteractionEvent(gui, button, player, Action.CLICK));// TO DO
             }
             break;
         }
     }
 
     @EventHandler
-    public void onClose(InventoryCloseEvent event) {
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (!(event.getPlayer() instanceof Player)) {
+            return;
+        }
         Player player = (Player) event.getPlayer();
+        if (PaginatedInventoryGUI.exclude == player) {
+            return;
+        }
         for (InventoryGUI gui : VignetteAPI.getCache(InventoryGUI.class)) {
-            if (event.getInventory().equals(gui.getOpenedInventory()) && gui.isTransient()) {
+            if (!gui.is(event.getInventory())) {
+                continue;
+            }
+            gui.removeViewer(player);
+            if (gui.isTransient()) {
                 gui.unregister();
             }
-            gui.close(player);
         }
     }
 

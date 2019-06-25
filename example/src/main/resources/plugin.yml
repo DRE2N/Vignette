@@ -4,7 +4,6 @@ version: ${project.version}
 api-version: 1.13
 author: Daniel Saukel
 description: ${project.description}
-website: ${project.url}
 commands:
   test:
     description: Opens the test menu.
