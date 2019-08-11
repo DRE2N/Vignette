@@ -62,7 +62,7 @@ public abstract class PaginatedInventoryLayout implements InventoryLayout {
             .build();
     public static final InventoryButton PLACEHOLDER = new InventoryButtonBuilder()
             .icon(Material.getMaterial("WHITE_STAINED_GLASS_PANE") != null ? Material.getMaterial("WHITE_STAINED_GLASS_PANE") : Material.getMaterial("STAINED_GLASS_PANE"))
-            .title("")
+            .title(ChatColor.RESET.toString())
             .build();
 
     /**
