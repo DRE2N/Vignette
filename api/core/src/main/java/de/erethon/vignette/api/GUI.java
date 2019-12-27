@@ -93,6 +93,16 @@ public interface GUI<T extends GUI<T>> extends Contextualized<T>, PlayerViewable
     }
 
     /**
+     * Removes all Components from the GUI.
+     */
+    default void clear() {
+        if (getLayout() == null) {
+            throw new IllegalStateException("The GUI " + toString() + "has no layout set");
+        }
+        getLayout().clear();
+    }
+
+    /**
      * Returns if there is still space for further components in this GUI
      *
      * @return if there is still space for further components in this GUI

@@ -86,7 +86,7 @@ public abstract class PaginatedInventoryLayout implements InventoryLayout {
     private PaginatedInventoryGUI gui;
 
     protected Stack<Component<?, InventoryGUI>[]> components;
-    protected int page;
+    protected int page = -1;
     protected int slot;
     private int size;
     private PaginationButtonPosition paginationButtonPosition;
@@ -252,6 +252,13 @@ public abstract class PaginatedInventoryLayout implements InventoryLayout {
         return false;
     }
 
+    @Override
+    public void clear() {
+        components.clear();
+        page = -1;
+        newPage();
+    }
+
     /**
      * Returns the amount of pages.
      *
@@ -327,6 +334,8 @@ public abstract class PaginatedInventoryLayout implements InventoryLayout {
         if (areSwitchButtonLinePlaceholdersEnabled()) {
             addSwitchButtonLinePlaceholders(i);
         }
+        slot = firstSlot();
+        page++;
     }
 
     /**

@@ -42,7 +42,9 @@ public class Example extends JavaPlugin {
         new SingleInventoryGUI(ChatColor.DARK_RED + "Centered GUI Test"),
         new SingleInventoryGUI(ChatColor.GOLD + "Overloaded centered GUI Test"),
         new SingleInventoryGUI(ChatColor.BLUE + "Context Modifier Test"),
-        new PaginatedInventoryGUI(ChatColor.BLUE + "Context Modifier + Pagination Test")
+        new PaginatedInventoryGUI(ChatColor.BLUE + "Context Modifier + Pagination Test"),
+        new SingleInventoryGUI(ChatColor.BLUE + "SingleInventoryGUI Clear Test"),
+        new PaginatedInventoryGUI(ChatColor.BLUE + "PaginatedInventoryGUI Clear Test")
     };
 
     static {
@@ -114,6 +116,18 @@ public class Example extends JavaPlugin {
                 .build()
         );
         TEST[5].register();
+        TEST[6].setLayout(new CenteredInventoryLayout((SingleInventoryGUI) TEST[6], 9));
+        TEST[6].add(new InventoryButton(Material.DIAMOND, ChatColor.AQUA + "3"));
+        TEST[6].add(new InventoryButton(Material.DIAMOND, ChatColor.AQUA + "5"));
+        TEST[6].clear();
+        TEST[6].add(new InventoryButton(Material.DIAMOND, ChatColor.AQUA + "4"));
+        TEST[7].setLayout(new PaginatedFlowInventoryLayout((PaginatedInventoryGUI) TEST[7], 27, PaginationButtonPosition.CENTER));
+        for (int i = 0; i < 100; i++) {
+            TEST[7].add(new InventoryButton(Material.DIAMOND, ChatColor.AQUA.toString() + i));
+        }
+        TEST[7].clear();
+        TEST[7].add(new InventoryButton(Material.DIAMOND, ChatColor.AQUA + "0"));
+        TEST[7].register();
     }
 
     @Override

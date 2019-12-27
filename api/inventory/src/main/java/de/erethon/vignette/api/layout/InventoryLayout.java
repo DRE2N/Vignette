@@ -166,6 +166,15 @@ public interface InventoryLayout extends Layout<InventoryGUI> {
     Component<?, InventoryGUI> getCurrent();
 
     /**
+     * Returns the slot where the first button to add was or will be inserted.
+     *
+     * @return the slot where the first button to add was or will be inserted
+     */
+    default int firstSlot() {
+        return 0;
+    }
+
+    /**
      * Returns the slot where the current button to add will be inserted.
      *
      * @return the slot where the current button to add will be inserted;

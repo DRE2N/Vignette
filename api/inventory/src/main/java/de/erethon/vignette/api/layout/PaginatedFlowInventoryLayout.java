@@ -35,7 +35,6 @@ public class PaginatedFlowInventoryLayout extends PaginatedInventoryLayout {
         slot++;
         if (slot >= getSize()) {
             newPage();
-            page++;
             slot = 0;
         }
         return slot;

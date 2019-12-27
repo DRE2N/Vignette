@@ -67,6 +67,11 @@ public interface Layout<T extends GUI> {
     }
 
     /**
+     * Removes all Components from the GUI.
+     */
+    void clear();
+
+    /**
      * Returns if there is still space for further components in the {@link GUI} attached to this layout
      *
      * @return if there is still space for further components in this GUI

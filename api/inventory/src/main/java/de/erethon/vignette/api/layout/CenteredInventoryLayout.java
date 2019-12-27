@@ -44,11 +44,15 @@ public class CenteredInventoryLayout extends SingleInventoryLayout {
 
     public CenteredInventoryLayout(InventoryGUI gui, int size) {
         super(gui, size);
-        slot = CENTER_SLOT;
     }
 
     public CenteredInventoryLayout(InventoryGUI gui, CenteredInventoryLayout layout) {
         super(gui, layout);
+    }
+
+    @Override
+    public int firstSlot() {
+        return CENTER_SLOT;
     }
 
     @Override

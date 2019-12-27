@@ -42,6 +42,7 @@ public abstract class SingleInventoryLayout implements InventoryLayout {
     protected SingleInventoryLayout(InventoryGUI gui, int size) {
         components = new Component[size];
         this.gui = gui;
+        slot = firstSlot();
     }
 
     protected SingleInventoryLayout(InventoryGUI gui, SingleInventoryLayout layout) {
@@ -123,6 +124,12 @@ public abstract class SingleInventoryLayout implements InventoryLayout {
             }
         }
         return false;
+    }
+
+    @Override
+    public void clear() {
+        components = new Component[getSize()];
+        slot = firstSlot();
     }
 
     @Override
