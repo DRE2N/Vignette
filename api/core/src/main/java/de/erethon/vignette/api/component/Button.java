@@ -41,14 +41,14 @@ public interface Button<THIS extends Button<THIS, TYPE>, TYPE extends GUI> exten
     void setTitle(String text);
 
     /**
-     * Returns the sound String played to the player when the button is clicked
+     * Returns the sound String played to the player when the button is clicked.
      *
      * @return the sound String played to the player when the button is clicked
      */
     String getSound();
 
     /**
-     * Sets the sound String played to the player when the button is clicked
+     * Sets the sound String played to the player when the button is clicked.
      *
      * @param sound the sound String
      */

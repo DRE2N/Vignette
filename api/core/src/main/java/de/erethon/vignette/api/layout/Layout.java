@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 /**
- * Contains methods to arrange the {@link de.erethon.vignette.api.component.Component}s of a GUI in a certain reproducable way.
+ * Contains methods to arrange the {@link de.erethon.vignette.api.component.Component}s of a GUI in a certain reproducible way.
  *
  * @param <T> the GUI implementation
  * @author Daniel Saukel
