@@ -11,6 +11,7 @@ A GUI Framework for Bukkit.
             .contextModifier((t, p) -> t.setTitle(PlaceholderAPI.setPlaceholders(p, "%my_placeholder%")))
             .build()
     );
+	gui.register();
 
 ### Features
 * Built-in layouts to format menus with ease
