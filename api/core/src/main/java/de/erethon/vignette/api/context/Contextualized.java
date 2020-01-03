@@ -13,6 +13,7 @@
 package de.erethon.vignette.api.context;
 
 import java.util.List;
+import java.util.Set;
 import org.bukkit.entity.Player;
 
 /**
@@ -65,6 +66,76 @@ public interface Contextualized<T extends Contextualized<T>> {
     default void applyAllContextModifiers(Player player) {
         getContextModifiers().forEach(m -> m.apply((T) this, player));
     }
+
+    /**
+     * Returns if the object has the given {@link StatusModifier}.
+     *
+     * @param status the modifier
+     * @return if the object has the given {@link StatusModifier}
+     */
+    boolean hasStatusModifier(StatusModifier<?> status);
+
+    /**
+     * Returns if the object has a {@link StatusModifier} with the given key.
+     *
+     * @param key the key
+     * @return if the object has a {@link StatusModifier} with the given key
+     */
+    default boolean hasStatusModifier(String key) {
+        return getStatusModifier(key) != null;
+    }
+
+    /**
+     * Returns the {@link StatusModifier}s.
+     *
+     * @return the {@link StatusModifier}s
+     */
+    Set<StatusModifier<?>> getStatusModifiers();
+
+    /**
+     * Returns the {@link StatusModifier} with the given key.
+     *
+     * @param key the key
+     * @return the {@link StatusModifier} with the given key
+     */
+    default StatusModifier<?> getStatusModifier(String key) {
+        for (StatusModifier<?> status : getStatusModifiers()) {
+            if (status.getKey().equals(key)) {
+                return status;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Adds a {@link StatusModifier}.
+     *
+     * @param status the modifier to add
+     */
+    void addStatusModifier(StatusModifier<?> status);
+
+    /**
+     * Removes a {@link StatusModifier}.
+     *
+     * @param status the modifier to remove
+     */
+    void removeStatusModifier(StatusModifier<?> status);
+
+    /**
+     * Removes all {@link StatusModifier}s that have the given key.
+     *
+     * @param key the key
+     */
+    default void removeStatusModifier(String key) {
+        getStatusModifiers().removeIf(s -> s.getKey().equals(key));
+    }
+
+    /**
+     * Sets the {@link StatusModifier}s.
+     *
+     * @param status the modifiers to set
+     */
+    void setStatusModifiers(Set<StatusModifier<?>> status);
 
     /**
      * Returns an exact copy of the contextualized object.

@@ -15,9 +15,12 @@ package de.erethon.vignette.api.component;
 import de.erethon.vignette.api.InventoryGUI;
 import de.erethon.vignette.api.action.InteractionListener;
 import de.erethon.vignette.api.context.ContextModifier;
+import de.erethon.vignette.api.context.StatusModifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -34,6 +37,7 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
     private String sound;
     private boolean stealable;
     private InteractionListener interactionListener;
+    private Set<StatusModifier<?>> statusModifiers = new HashSet<>();
     private List<ContextModifier<InventoryButton>> contextModifiers = new ArrayList<>();
 
     /**
@@ -277,6 +281,35 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
             contextModifiers.clear();
         } else {
             contextModifiers = ctxts;
+        }
+    }
+
+    @Override
+    public boolean hasStatusModifier(StatusModifier<?> status) {
+        return statusModifiers.contains(status);
+    }
+
+    @Override
+    public Set<StatusModifier<?>> getStatusModifiers() {
+        return statusModifiers;
+    }
+
+    @Override
+    public void addStatusModifier(StatusModifier<?> status) {
+        statusModifiers.add(status);
+    }
+
+    @Override
+    public void removeStatusModifier(StatusModifier<?> status) {
+        statusModifiers.remove(status);
+    }
+
+    @Override
+    public void setStatusModifiers(Set<StatusModifier<?>> status) {
+        if (status == null) {
+            statusModifiers.clear();
+        } else {
+            statusModifiers = status;
         }
     }
 

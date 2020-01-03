@@ -14,11 +14,14 @@ package de.erethon.vignette.api;
 
 import de.erethon.vignette.api.action.CloseListener;
 import de.erethon.vignette.api.context.ContextModifier;
+import de.erethon.vignette.api.context.StatusModifier;
 import de.erethon.vignette.api.layout.Layout;
 import de.erethon.vignette.util.PlayerCollection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.entity.Player;
 
 /**
@@ -33,6 +36,7 @@ public abstract class AbstractGUI<T extends AbstractGUI<T>> implements GUI<T> {
     private Layout<T> layout;
     private CloseListener closeListener;
     private List<ContextModifier<T>> contextModifiers = new ArrayList<>();
+    private Set<StatusModifier<?>> statusModifiers = new HashSet<>();
     private boolean isTransient;
 
     protected PlayerCollection viewers = new PlayerCollection();
@@ -49,6 +53,7 @@ public abstract class AbstractGUI<T extends AbstractGUI<T>> implements GUI<T> {
         this(gui.title);
         layout = gui.layout.copy(this);
         contextModifiers = gui.contextModifiers;
+        statusModifiers = gui.statusModifiers;
         isTransient = gui.isTransient;
         if (gui.isRegistered()) {
             register();
@@ -106,6 +111,35 @@ public abstract class AbstractGUI<T extends AbstractGUI<T>> implements GUI<T> {
             contextModifiers.clear();
         } else {
             contextModifiers = ctxts;
+        }
+    }
+
+    @Override
+    public boolean hasStatusModifier(StatusModifier<?> status) {
+        return statusModifiers.contains(status);
+    }
+
+    @Override
+    public Set<StatusModifier<?>> getStatusModifiers() {
+        return statusModifiers;
+    }
+
+    @Override
+    public void addStatusModifier(StatusModifier<?> status) {
+        statusModifiers.add(status);
+    }
+
+    @Override
+    public void removeStatusModifier(StatusModifier<?> status) {
+        statusModifiers.remove(status);
+    }
+
+    @Override
+    public void setStatusModifiers(Set<StatusModifier<?>> status) {
+        if (status == null) {
+            statusModifiers.clear();
+        } else {
+            statusModifiers = status;
         }
     }
 
