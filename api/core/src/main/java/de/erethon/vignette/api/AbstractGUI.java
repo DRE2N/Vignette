@@ -112,4 +112,16 @@ public abstract class AbstractGUI<T extends AbstractGUI<T>> implements GUI<T> {
         this.isTransient = isTransient;
     }
 
+    @Override
+    public AbstractGUI getContextualizedCopy(Player viewer) {
+        if (!getContextModifiers().isEmpty()) {
+            AbstractGUI gui = copy();
+            gui.setTransient(true);
+            gui.applyAllContextModifiers(viewer);
+            return gui;
+        } else {
+            return this;
+        }
+    }
+
 }

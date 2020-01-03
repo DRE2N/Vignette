@@ -128,21 +128,4 @@ public abstract class InventoryGUI extends AbstractGUI<InventoryGUI> {
         }
     }
 
-    /**
-     * Returns a transient copy if the GUI has context modifiers and applies all of them; returns the GUI itself if not.
-     *
-     * @param viewer the viewer
-     * @return a transient copy if the GUI has context modifiers and applies all of them; returns the GUI itself if not
-     */
-    public InventoryGUI getContextualizedCopy(Player viewer) {
-        if (!getContextModifiers().isEmpty()) {
-            InventoryGUI gui = copy();
-            gui.setTransient(true);
-            gui.applyAllContextModifiers(viewer);
-            return gui;
-        } else {
-            return this;
-        }
-    }
-
 }

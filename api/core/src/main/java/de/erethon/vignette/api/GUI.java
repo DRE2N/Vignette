@@ -143,6 +143,14 @@ public interface GUI<T extends GUI<T>> extends Contextualized<T>, PlayerViewable
     void setTransient(boolean isTransient);
 
     /**
+     * Returns a transient copy if the GUI has context modifiers and applies all of them; returns the GUI itself if not.
+     *
+     * @param viewer the viewer
+     * @return a transient copy if the GUI has context modifiers and applies all of them; returns the GUI itself if not
+     */
+    GUI getContextualizedCopy(Player viewer);
+
+    /**
      * Starts tracking the GUI.
      */
     default void register() {
