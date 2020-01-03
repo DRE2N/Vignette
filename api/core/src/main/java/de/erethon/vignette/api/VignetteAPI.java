@@ -80,7 +80,9 @@ public class VignetteAPI {
      * @param gui the GUI
      */
     public static void register(GUI gui) {
-        cache.add(gui);
+        if (!isRegistered(gui)) {
+            cache.add(gui);
+        }
     }
 
     /**
