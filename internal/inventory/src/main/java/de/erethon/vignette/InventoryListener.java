@@ -16,6 +16,7 @@ import de.erethon.vignette.api.InventoryGUI;
 import de.erethon.vignette.api.PaginatedInventoryGUI;
 import de.erethon.vignette.api.VignetteAPI;
 import de.erethon.vignette.api.action.Action;
+import de.erethon.vignette.api.action.CloseEvent;
 import de.erethon.vignette.api.action.InteractionEvent;
 import de.erethon.vignette.api.component.InventoryButton;
 import org.bukkit.entity.Player;
@@ -66,6 +67,9 @@ public class InventoryListener implements Listener {
         for (InventoryGUI gui : VignetteAPI.getCache(InventoryGUI.class)) {
             if (!gui.is(event.getInventory())) {
                 continue;
+            }
+            if (gui.getCloseListener() != null) {
+                gui.getCloseListener().onClose(new CloseEvent(gui, player));
             }
             gui.removeViewer(player);
             if (gui.isTransient()) {

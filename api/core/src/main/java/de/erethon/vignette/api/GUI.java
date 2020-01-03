@@ -12,11 +12,13 @@
  */
 package de.erethon.vignette.api;
 
+import de.erethon.vignette.api.action.CloseListener;
 import de.erethon.vignette.api.component.Component;
 import de.erethon.vignette.api.context.Contextualized;
 import de.erethon.vignette.api.layout.Layout;
 import java.util.Collection;
 import java.util.function.Predicate;
+import org.bukkit.entity.Player;
 
 /**
  * Represents a graphical user interface.
@@ -127,6 +129,20 @@ public interface GUI<T extends GUI<T>> extends Contextualized<T>, PlayerViewable
      * @param layout the Layout to set
      */
     void setLayout(Layout<T> layout);
+
+    /**
+     * Returns the CloseListener attached to this GUI.
+     *
+     * @return the CloseListener attached to this GUI
+     */
+    CloseListener getCloseListener();
+
+    /**
+     * Sets the CloseListener attached to this GUI.
+     *
+     * @param listener the listener to set
+     */
+    void setCloseListener(CloseListener listener);
 
     /**
      * If this GUI shall be unregistered automatically when closed.

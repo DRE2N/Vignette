@@ -12,6 +12,7 @@
  */
 package de.erethon.vignette.api;
 
+import de.erethon.vignette.api.action.CloseListener;
 import de.erethon.vignette.api.context.ContextModifier;
 import de.erethon.vignette.api.layout.Layout;
 import de.erethon.vignette.util.PlayerCollection;
@@ -30,6 +31,7 @@ public abstract class AbstractGUI<T extends AbstractGUI<T>> implements GUI<T> {
 
     private String title;
     private Layout<T> layout;
+    private CloseListener closeListener;
     private List<ContextModifier<T>> contextModifiers = new ArrayList<>();
     private boolean isTransient;
 
@@ -71,6 +73,16 @@ public abstract class AbstractGUI<T extends AbstractGUI<T>> implements GUI<T> {
     @Override
     public void setLayout(Layout<T> layout) {
         this.layout = layout;
+    }
+
+    @Override
+    public CloseListener getCloseListener() {
+        return closeListener;
+    }
+
+    @Override
+    public void setCloseListener(CloseListener listener) {
+        closeListener = listener;
     }
 
     @Override
