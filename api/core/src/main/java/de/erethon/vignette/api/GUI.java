@@ -16,6 +16,7 @@ import de.erethon.vignette.api.action.CloseListener;
 import de.erethon.vignette.api.component.Component;
 import de.erethon.vignette.api.context.Contextualized;
 import de.erethon.vignette.api.layout.Layout;
+import de.erethon.vignette.api.request.RequestParticipator;
 import java.util.Collection;
 import java.util.function.Predicate;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ import org.bukkit.entity.Player;
  * @param <T> the type itself
  * @author Daniel Saukel
  */
-public interface GUI<T extends GUI<T>> extends Contextualized<T>, PlayerViewable {
+public interface GUI<T extends GUI<T>> extends Contextualized<T> {
 
     /**
      * Returns the title text.
@@ -165,6 +166,55 @@ public interface GUI<T extends GUI<T>> extends Contextualized<T>, PlayerViewable
      * @return a transient copy if the GUI has context modifiers and applies all of them; returns the GUI itself if not
      */
     GUI getContextualizedCopy(Player viewer);
+
+    /**
+     * Opens the GUI to an array of players and adds them to the viewers Collection.
+     * <p>
+     * Ignores Players who are not online.
+     * <p>
+     * Triggers all associated {@link de.erethon.vignette.api.context.ContextModifier}s.
+     *
+     * @throws IllegalStateException if the GUI is not registered
+     * @param players the Players
+     */
+    void open(Player... players);
+
+    /**
+     * Opens the GUI to all players represented by an array of RequestParticipators and adds them to the viewers Collection.
+     * <p>
+     * Ignores Players who are not online.
+     * <p>
+     * Triggers all associated {@link de.erethon.vignette.api.context.ContextModifier}s
+     *
+     * @throws IllegalStateException if the GUI is not registered
+     * @param requestParticipators the RequestParticipators
+     */
+    default void open(RequestParticipator... requestParticipators) {
+        for (RequestParticipator rp : requestParticipators) {
+            Collection<Player> players = rp.getRequestPlayers();
+            open(players.toArray(new Player[players.size()]));
+        }
+    }
+
+    /**
+     * Returns a Collection of the Players viewing the GUI.
+     * <p>
+     * To remove Players from this Collection, use {@link #close(Player...)}.
+     *
+     * @return the Players who are viewing the GUI
+     */
+    Collection<Player> getViewers();
+
+    /**
+     * Closes the GUI to an array of Players.
+     * <p>
+     * If the array is empty, the GUI is closed to all players.
+     * <p>
+     * Ignores Players who are not online.
+     *
+     * @param players the Players to remove from the viewers' Collection
+     */
+    void close(Player... players);
 
     /**
      * Starts tracking the GUI.

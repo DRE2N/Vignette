@@ -17,9 +17,10 @@ import org.bukkit.entity.Player;
 /**
  * Represents a graphical user interface with multiple pages.
  *
+ * @param <T> The type itself
  * @author Daniel Saukel
  */
-public interface Paginated extends PlayerViewable {
+public interface Paginated<T extends GUI<T>> extends GUI<T> {
 
     /**
      * Returns if the components of this GUI are automatically added to the next page if no space is left, or to the last one if space is freed.

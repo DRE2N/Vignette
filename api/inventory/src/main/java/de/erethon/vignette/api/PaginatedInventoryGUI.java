@@ -29,7 +29,7 @@ import org.bukkit.inventory.Inventory;
  *
  * @author Daniel Saukel
  */
-public class PaginatedInventoryGUI extends InventoryGUI implements Paginated {
+public class PaginatedInventoryGUI extends InventoryGUI implements Paginated<InventoryGUI> {
 
     /**
      * @deprecated for internal use only
