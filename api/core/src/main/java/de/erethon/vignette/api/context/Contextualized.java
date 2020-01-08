@@ -108,6 +108,26 @@ public interface Contextualized<T extends Contextualized<T>> {
     }
 
     /**
+     * Returns the {@link StatusModifier} with the given key.
+     *
+     * @param <V>  the type of the modifier value
+     * @param type the type of the modifier value
+     * @param key  the key
+     * @return the {@link StatusModifier} with the given key
+     */
+    default <V> StatusModifier<V> getStatusModifier(Class<V> type, String key) {
+        for (StatusModifier<?> status : getStatusModifiers()) {
+            if (!type.isInstance(status.getValue())) {
+                continue;
+            }
+            if (status.getKey().equals(key)) {
+                return (StatusModifier<V>) status;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Adds a {@link StatusModifier}.
      *
      * @param status the modifier to add
