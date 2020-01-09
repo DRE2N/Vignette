@@ -48,6 +48,13 @@ public class StatusModifier<T> {
     private String key;
     private T value;
 
+    /**
+     * Instantiates the StatusModifier without a value.
+     * <p>
+     * This can be used instead of boolean values where the check that the modifier exists is enough information.
+     *
+     * @param key the key
+     */
     public StatusModifier(String key) {
         this.key = key;
     }
