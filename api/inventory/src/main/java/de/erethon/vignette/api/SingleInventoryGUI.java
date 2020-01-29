@@ -42,15 +42,14 @@ public class SingleInventoryGUI extends InventoryGUI {
     }
 
     @Override
-    public void open(Player... players) {
+    public SingleInventoryGUI open(Player player) {
         if (!isRegistered()) {
             throw new IllegalStateException("The GUI " + toString() + " is not registered");
         }
-        for (Player player : players) {
-            SingleInventoryGUI copy = ((SingleInventoryGUI) getContextualizedCopy(player));
-            copy.viewers.add(player);
-            player.openInventory(copy.createInventory(player));
-        }
+        SingleInventoryGUI copy = ((SingleInventoryGUI) getContextualizedCopy(player));
+        copy.viewers.add(player);
+        player.openInventory(copy.createInventory(player));
+        return copy;
     }
 
     @Override

@@ -91,20 +91,8 @@ public class PaginatedInventoryGUI extends InventoryGUI implements Paginated<Inv
         componentMoveUpEnabled = moveUp;
     }
 
-    /**
-     * Opens a specific page of the GUI to an array of players and adds them to the viewers Collection.
-     * <p>
-     * Ignores Players who are not online.
-     * <p>
-     * Triggers all associated {@link de.erethon.vignette.api.context.ContextModifier}s.
-     *
-     * @throws IllegalStateException if the GUI is not registered
-     * @param page    the page index to open. If the value is higher than or equal to {@link #getPages()},
-     *                the first page will be opened; if it is lower than 0, the last page will be opened.
-     * @param players the Players
-     */
     @Override
-    public void open(int page, Player... players) {
+    public PaginatedInventoryGUI open(int page, Player player) {
         if (!isRegistered()) {
             throw new IllegalStateException("The GUI " + toString() + " is not registered");
         }
@@ -113,18 +101,18 @@ public class PaginatedInventoryGUI extends InventoryGUI implements Paginated<Inv
         } else if (page < 0) {
             page = getPages() - 1;
         }
-        for (Player player : players) {
-            if (viewers.contains(player)) {
-                openedPage.put(player, page);
-                exclude = player;
-                player.openInventory(openedInventories.get(page));
-                exclude = null;
-            } else {
-                PaginatedInventoryGUI copy = ((PaginatedInventoryGUI) getContextualizedCopy(player));
-                copy.viewers.add(player);
-                copy.openedPage.put(player, page);
-                player.openInventory(copy.createInventories(player).get(page));
-            }
+        if (viewers.contains(player)) {
+            openedPage.put(player, page);
+            exclude = player;
+            player.openInventory(openedInventories.get(page));
+            exclude = null;
+            return this;
+        } else {
+            PaginatedInventoryGUI copy = ((PaginatedInventoryGUI) getContextualizedCopy(player));
+            copy.viewers.add(player);
+            copy.openedPage.put(player, page);
+            player.openInventory(copy.createInventories(player).get(page));
+            return copy;
         }
     }
 

@@ -49,15 +49,43 @@ public interface Paginated<T extends GUI<T>> extends GUI<T> {
         open(0, players);
     }
 
+    @Override
+    default T open(Player player) {
+        return open(0, player);
+    }
+
     /**
-     * Opens the GUI at a specific page to an array of players and adds them to the viewers Collection.
+     * Opens a specific page of the GUI to a player and adds him to the viewers Collection.
+     * <p>
+     * Fails silently if the player is not online.
+     * <p>
+     * Triggers all associated {@link de.erethon.vignette.api.context.ContextModifier}s.
+     *
+     * @throws IllegalStateException if the GUI is not registered
+     * @param page   the page index to open. If the value is higher than or equal to {@link #getPages()},
+     *               the first page will be opened; if it is lower than 0, the last page will be opened.
+     * @param player the Player
+     * @return the opened GUI. It might be a copy of this object depending on the implementation
+     */
+    T open(int page, Player player);
+
+    /**
+     * Opens a specific page of the GUI to an array of players and adds them to the viewers Collection.
      * <p>
      * Ignores Players who are not online.
+     * <p>
+     * Triggers all associated {@link de.erethon.vignette.api.context.ContextModifier}s.
      *
-     * @param page    the page to open
+     * @throws IllegalStateException if the GUI is not registered
+     * @param page    the page index to open. If the value is higher than or equal to {@link #getPages()},
+     *                the first page will be opened; if it is lower than 0, the last page will be opened.
      * @param players the Players
      */
-    void open(int page, Player... players);
+    default void open(int page, Player... players) {
+        for (Player player : players) {
+            open(page, player);
+        }
+    }
 
     /**
      * Returns the title text of a specific page.

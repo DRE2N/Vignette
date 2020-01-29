@@ -168,6 +168,19 @@ public interface GUI<T extends GUI<T>> extends Contextualized<T> {
     GUI getContextualizedCopy(Player viewer);
 
     /**
+     * Opens the GUI to a player and adds him to the viewers Collection.
+     * <p>
+     * Fails silently if the player is not online.
+     * <p>
+     * Triggers all associated {@link de.erethon.vignette.api.context.ContextModifier}s.
+     *
+     * @throws IllegalStateException if the GUI is not registered
+     * @param player the Player
+     * @return the opened GUI. It might be a copy of this object depending on the implementation
+     */
+    T open(Player player);
+
+    /**
      * Opens the GUI to an array of players and adds them to the viewers Collection.
      * <p>
      * Ignores Players who are not online.
@@ -177,7 +190,11 @@ public interface GUI<T extends GUI<T>> extends Contextualized<T> {
      * @throws IllegalStateException if the GUI is not registered
      * @param players the Players
      */
-    void open(Player... players);
+    default void open(Player... players) {
+        for (Player player : players) {
+            open(player);
+        }
+    }
 
     /**
      * Opens the GUI to all players represented by an array of RequestParticipators and adds them to the viewers Collection.
