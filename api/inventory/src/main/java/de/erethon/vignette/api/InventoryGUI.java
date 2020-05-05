@@ -12,6 +12,7 @@
  */
 package de.erethon.vignette.api;
 
+import de.erethon.vignette.api.action.MoveItemStackListener;
 import de.erethon.vignette.api.component.InventoryButton;
 import de.erethon.vignette.api.layout.InventoryLayout;
 import de.erethon.vignette.api.layout.Layout;
@@ -26,6 +27,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class InventoryGUI extends AbstractGUI<InventoryGUI> {
 
+    private MoveItemStackListener moveItemStackListener;
+
     protected InventoryGUI() {
         super();
     }
@@ -39,6 +42,7 @@ public abstract class InventoryGUI extends AbstractGUI<InventoryGUI> {
 
     protected InventoryGUI(InventoryGUI gui) {
         super(gui);
+        moveItemStackListener = gui.moveItemStackListener;
     }
 
     @Override
@@ -92,6 +96,24 @@ public abstract class InventoryGUI extends AbstractGUI<InventoryGUI> {
      */
     public InventoryButton getButton(ItemStack itemStack, Player contextPlayer) {
         return ((InventoryLayout) getLayout()).getButton(itemStack, contextPlayer);
+    }
+
+    /**
+     * Returns the MoveItemStackListener attached to this GUI.
+     *
+     * @return the MoveItemStackListener attached to this GUI
+     */
+    public MoveItemStackListener getMoveItemStackListener() {
+        return moveItemStackListener;
+    }
+
+    /**
+     * Sets the MoveItemStackListener attached to this GUI.
+     *
+     * @param listener the listener to set
+     */
+    public void setMoveItemStackListener(MoveItemStackListener listener) {
+        moveItemStackListener = listener;
     }
 
     /**
