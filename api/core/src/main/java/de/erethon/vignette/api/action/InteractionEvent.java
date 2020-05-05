@@ -27,6 +27,7 @@ public class InteractionEvent {
     private Button button;
     private Player player;
     private Action action;
+    private boolean clickCancelled;
 
     public InteractionEvent(GUI gui, Button button, Player player, Action action) {
         this.gui = gui;
@@ -69,6 +70,25 @@ public class InteractionEvent {
      */
     public Action getAction() {
         return action;
+    }
+
+    /**
+     * Returns if the click itself is cancelled after this event is called.
+     *
+     * @see #setClickCancelled(boolean)
+     * @return if the click itself is cancelled after this event is called.
+     */
+    public boolean isClickCancelled() {
+        return clickCancelled;
+    }
+
+    /**
+     * Sets if the click itself is cancelled after this event is cancelled.
+     *
+     * @param cancelled if the click itself is cancelled after this event is cancelled
+     */
+    public void setClickCancelled(boolean cancelled) {
+        clickCancelled = cancelled;
     }
 
 }
