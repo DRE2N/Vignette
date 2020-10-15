@@ -47,7 +47,8 @@ public class Example extends JavaPlugin {
         new PaginatedInventoryGUI(ChatColor.BLUE + "Context Modifier + Pagination Test"),
         new SingleInventoryGUI(ChatColor.BLUE + "SingleInventoryGUI Clear Test"),
         new PaginatedInventoryGUI(ChatColor.BLUE + "PaginatedInventoryGUI Clear Test"),
-        new SingleInventoryGUI(ChatColor.GOLD + "CloseListener / StatusModifier Test")
+        new SingleInventoryGUI(ChatColor.GOLD + "CloseListener / StatusModifier Test"),
+        new SingleInventoryGUI(ChatColor.RED + "NullPointerException")
     };
 
     static {
@@ -145,6 +146,17 @@ public class Example extends JavaPlugin {
                     .lines(mod.getKey(), mod.getValue() != null ? mod.getValue().toString() : "null")
                     .build());
         }
+
+        TEST[9].setLayout(new FlowInventoryLayout(TEST[9], 9));
+        TEST[9].add(new InventoryButtonBuilder()
+                .icon(Material.ANVIL)
+                .title("Click")
+                .onInteract(e -> {
+                    String s = null;
+                    s.indexOf(0);
+                })
+                .build()
+        );
     }
 
     @Override

@@ -29,6 +29,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.PlayerInventory;
 
 /**
@@ -51,15 +52,15 @@ public class InventoryListener implements Listener {
         MOVE_ACTIONS.add(InventoryAction.SWAP_WITH_CURSOR);
     }
 
-    private void fireAISE(InventoryGUI gui, InventoryClickEvent event) {
-        MoveItemStackListener aisl = gui.getMoveItemStackListener();
-        if (aisl == null) {
+    private void fireMISE(InventoryGUI gui, InventoryClickEvent event) {
+        MoveItemStackListener misl = gui.getMoveItemStackListener();
+        if (misl == null) {
             return;
         }
-        MoveItemStackEvent aise = new MoveItemStackEvent(gui, event.getCursor(), event.getSlot(), (Player) event.getWhoClicked());
-        aisl.onAddition(aise);
-        if (aise.getResult() != null) {
-            event.setResult(aise.getResult());
+        MoveItemStackEvent mise = new MoveItemStackEvent(gui, event.getCursor(), event.getSlot(), (Player) event.getWhoClicked());
+        misl.onAddition(mise);
+        if (mise.getResult() != null) {
+            event.setResult(mise.getResult());
         }
     }
 
@@ -98,13 +99,21 @@ public class InventoryListener implements Listener {
                         vAction = Action.RIGHT_CLICK;
                 }
                 InteractionEvent ie = new InteractionEvent(gui, button, player, vAction);
-                button.getInteractionListener().onAction(ie);
+                try {
+                    button.getInteractionListener().onAction(ie);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
                 if (ie.isClickCancelled()) {
                     return;
                 }
             }
             if (MOVE_ACTIONS.contains(iAction)) {
-                fireAISE(gui, event);
+                try {
+                    fireMISE(gui, event);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
             }
             break;
         }
