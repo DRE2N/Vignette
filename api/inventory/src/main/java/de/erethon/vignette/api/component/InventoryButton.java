@@ -35,7 +35,7 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
 
     private ItemStack itemStack;
     private String sound;
-    private boolean stealable;
+    private boolean leftClickLocked = true, rightClickLocked = true;
     private InteractionListener interactionListener;
     private Set<StatusModifier<?>> statusModifiers = new HashSet<>();
     private List<ContextModifier<InventoryButton>> contextModifiers = new ArrayList<>();
@@ -93,7 +93,8 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
     private InventoryButton(InventoryButton button) {
         itemStack = button.itemStack.clone();
         sound = button.sound;
-        stealable = button.stealable;
+        leftClickLocked = button.leftClickLocked;
+        rightClickLocked = button.rightClickLocked;
         interactionListener = button.interactionListener;
         contextModifiers = button.contextModifiers;
     }
@@ -231,23 +232,60 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
     /**
      * Returns if the button may be taken from the GUI.
      * <p>
-     * This is false by default.
+     * This is equal to !({@link #isLeftClickLocked()} && {@link #isRightClickLocked()}).
      *
      * @return if the button may be taken from the GUI
      */
     public boolean isStealable() {
-        return stealable;
+        return !(leftClickLocked && rightClickLocked);
     }
 
     /**
      * Sets if the button may be taken from the GUI.
      * <p>
-     * This is false by default.
+     * This sets {@link #isLeftClickLocked()} and {@link #isRightClickLocked()} to negated the parameter.
      *
      * @param stealable if the button may be taken from the GUI
      */
     public void setStealable(boolean stealable) {
-        this.stealable = stealable;
+        leftClickLocked = !stealable;
+        rightClickLocked = !stealable;
+    }
+
+    /**
+     * Returns if the button cannot be picked up with a left click.
+     *
+     * @return if the button cannot be picked up with a left click
+     */
+    public boolean isLeftClickLocked() {
+        return leftClickLocked;
+    }
+
+    /**
+     * Sets if the button cannot be picked up with a left click.
+     *
+     * @param locked if the button cannot be picked up with a left click
+     */
+    public void setLeftClickLocked(boolean locked) {
+        leftClickLocked = locked;
+    }
+
+    /**
+     * Returns if the button cannot be picked up with a right click.
+     *
+     * @return if the button cannot be picked up with a right click
+     */
+    public boolean isRightClickLocked() {
+        return rightClickLocked;
+    }
+
+    /**
+     * Sets if the button cannot be picked up with a right click.
+     *
+     * @param locked if the button cannot be picked up with a right click
+     */
+    public void setRightClickLocked(boolean locked) {
+        rightClickLocked = locked;
     }
 
     @Override

@@ -15,9 +15,11 @@ package de.erethon.vignette.api.action;
 import de.erethon.vignette.api.InventoryGUI;
 import de.erethon.vignette.api.component.InventoryButton;
 import de.erethon.vignette.api.layout.InventoryLayout;
+import java.util.HashSet;
+import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event.Result;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -25,14 +27,28 @@ import org.bukkit.inventory.ItemStack;
  */
 public class MoveItemStackEvent {
 
+    private static final Set<InventoryAction> REMOVE_ACTIONS = new HashSet<>();
+
+    static {
+        REMOVE_ACTIONS.add(InventoryAction.COLLECT_TO_CURSOR);
+        REMOVE_ACTIONS.add(InventoryAction.HOTBAR_MOVE_AND_READD);
+        REMOVE_ACTIONS.add(InventoryAction.HOTBAR_SWAP);
+        REMOVE_ACTIONS.add(InventoryAction.MOVE_TO_OTHER_INVENTORY);
+        REMOVE_ACTIONS.add(InventoryAction.PICKUP_ALL);
+        REMOVE_ACTIONS.add(InventoryAction.PICKUP_HALF);
+        REMOVE_ACTIONS.add(InventoryAction.PICKUP_ONE);
+        REMOVE_ACTIONS.add(InventoryAction.PICKUP_SOME);
+    }
+
     private InventoryGUI gui;
+    private InventoryAction invAction;
     private ItemStack itemStack;
     private int slot;
     private Player player;
-    private Result result;
 
-    public MoveItemStackEvent(InventoryGUI gui, ItemStack itemStack, int slot, Player player) {
+    public MoveItemStackEvent(InventoryGUI gui, InventoryAction invAction, ItemStack itemStack, int slot, Player player) {
         this.gui = gui;
+        this.invAction = invAction;
         this.itemStack = itemStack;
         this.slot = slot;
         this.player = player;
@@ -45,6 +61,15 @@ public class MoveItemStackEvent {
      */
     public InventoryGUI getGUI() {
         return gui;
+    }
+
+    /**
+     * Returns how the ItemStack was moved.
+     *
+     * @return how the ItemStack was moved
+     */
+    public InventoryAction getInventoryAction() {
+        return invAction;
     }
 
     /**
@@ -80,31 +105,13 @@ public class MoveItemStackEvent {
      * @return the added item as a button; null if the item was removed
      */
     public InventoryButton confirmAsButton() {
-        if (itemStack == null || itemStack.getType() == Material.AIR) {
+        if (REMOVE_ACTIONS.contains(invAction) || itemStack == null || itemStack.getType() == Material.AIR) {
             return null;
         }
         InventoryLayout layout = (InventoryLayout) gui.getLayout();
         InventoryButton button = new InventoryButton(itemStack);
         layout.set(slot, button);
         return button;
-    }
-
-    /**
-     * Returns the result set for the Bukkit click event through {@link #setResult(org.bukkit.event.Event.Result) or null if nothing has been set.
-     *
-     * @return the result set for the click event through {@link #setResult(org.bukkit.event.Event.Result) or null if nothing has been set
-     */
-    public Result getResult() {
-        return result;
-    }
-
-    /**
-     * Sets the result for the Bukkit click event.
-     *
-     * @param result the result for the click event
-     */
-    public void setResult(Result result) {
-        this.result = result;
     }
 
 }
