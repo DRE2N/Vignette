@@ -76,6 +76,9 @@ public class InventoryListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getClickedInventory() instanceof PlayerInventory) {
+            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                event.setCancelled(true);
+            }
             return;
         }
         if (!(event.getWhoClicked() instanceof Player)) {
@@ -106,7 +109,6 @@ public class InventoryListener implements Listener {
                     vAction = Action.RIGHT_CLICK;
             }
             boolean cancelled = true;
-            org.bukkit.Bukkit.broadcastMessage(vAction.name());
             if (vAction == Action.LEFT_CLICK) {
                 cancelled = button.isLeftClickLocked();
             } else if (vAction == Action.RIGHT_CLICK) {
