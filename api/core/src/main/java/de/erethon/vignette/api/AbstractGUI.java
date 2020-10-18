@@ -52,6 +52,7 @@ public abstract class AbstractGUI<T extends AbstractGUI<T>> implements GUI<T> {
     protected AbstractGUI(AbstractGUI gui) {
         this(gui.title);
         layout = gui.layout.copy(this);
+        closeListener = gui.closeListener;
         contextModifiers = gui.contextModifiers;
         statusModifiers = gui.statusModifiers;
         isTransient = gui.isTransient;
