@@ -75,12 +75,6 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getClickedInventory() instanceof PlayerInventory) {
-            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-                event.setCancelled(true);
-            }
-            return;
-        }
         if (!(event.getWhoClicked() instanceof Player)) {
             return;
         }
@@ -88,6 +82,12 @@ public class InventoryListener implements Listener {
         for (InventoryGUI gui : VignetteAPI.getCache(InventoryGUI.class)) {
             if (!gui.getViewers().contains(player)) {
                 continue;
+            }
+            if (event.getClickedInventory() instanceof PlayerInventory) {
+                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                    event.setCancelled(true);
+                }
+                return;
             }
             InventoryButton button = gui.getButton(event.getCurrentItem());
             InventoryAction iAction = event.getAction();
