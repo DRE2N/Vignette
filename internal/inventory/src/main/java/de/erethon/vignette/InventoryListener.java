@@ -101,17 +101,7 @@ public class InventoryListener implements Listener {
                 }
                 continue;
             }
-            Action vAction = Action.CLICK;
-            switch (iAction) {
-                case PLACE_ALL:
-                case PICKUP_ALL:
-                case MOVE_TO_OTHER_INVENTORY:
-                    vAction = Action.LEFT_CLICK;
-                    break;
-                case PICKUP_HALF:
-                case PLACE_ONE:
-                    vAction = Action.RIGHT_CLICK;
-            }
+            Action vAction = Action.getAction(iAction);
             boolean cancelled = true;
             if (vAction == Action.LEFT_CLICK) {
                 cancelled = button.isLeftClickLocked();
@@ -126,7 +116,7 @@ public class InventoryListener implements Listener {
                 player.playSound(player.getLocation(), sound.getSound(), sound.getVolume(), sound.getPitch());
             }
             if (button.getInteractionListener() != null) {
-                InteractionEvent ie = new InteractionEvent(gui, button, player, vAction);
+                InteractionEvent ie = new InteractionEvent(gui, button, player, iAction);
                 try {
                     button.getInteractionListener().onAction(ie);
                 } catch (Exception exception) {

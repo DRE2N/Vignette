@@ -15,6 +15,7 @@ package de.erethon.vignette.api.action;
 import de.erethon.vignette.api.GUI;
 import de.erethon.vignette.api.component.Button;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 
 /**
  * Created internally when a player interacts with a GUI {@link de.erethon.vignette.api.component.Component}.
@@ -26,10 +27,10 @@ public class InteractionEvent {
     private GUI gui;
     private Button button;
     private Player player;
-    private Action action;
+    private InventoryAction action;
     private boolean clickCancelled;
 
-    public InteractionEvent(GUI gui, Button button, Player player, Action action) {
+    public InteractionEvent(GUI gui, Button button, Player player, InventoryAction action) {
         this.gui = gui;
         this.button = button;
         this.player = player;
@@ -69,6 +70,15 @@ public class InteractionEvent {
      * @return an Action that matchs the action that occurred
      */
     public Action getAction() {
+        return Action.getAction(action);
+    }
+
+    /**
+     * Returns the inventory action.
+     *
+     * @return the inventory action
+     */
+    public InventoryAction getInventoryAction() {
         return action;
     }
 

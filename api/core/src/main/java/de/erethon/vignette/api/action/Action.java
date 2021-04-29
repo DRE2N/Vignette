@@ -12,6 +12,8 @@
  */
 package de.erethon.vignette.api.action;
 
+import org.bukkit.event.inventory.InventoryAction;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,4 +43,19 @@ public enum Action {
         return this == other || parents.contains(other);
     }
 
+    public static Action getAction(InventoryAction iAction) {
+        Action action = Action.CLICK;
+        switch (iAction) {
+            case PLACE_ALL:
+            case PICKUP_ALL:
+            case MOVE_TO_OTHER_INVENTORY:
+                action = Action.LEFT_CLICK;
+                break;
+            case PICKUP_HALF:
+            case PLACE_ONE:
+                action = Action.RIGHT_CLICK;
+                break;
+        }
+        return action;
+    }
 }
