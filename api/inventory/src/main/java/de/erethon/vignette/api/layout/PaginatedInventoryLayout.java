@@ -12,6 +12,7 @@
  */
 package de.erethon.vignette.api.layout;
 
+import de.erethon.vignette.api.ComponentSound;
 import de.erethon.vignette.api.InventoryGUI;
 import de.erethon.vignette.api.Paginated;
 import de.erethon.vignette.api.PaginatedInventoryGUI;
@@ -40,7 +41,7 @@ public abstract class PaginatedInventoryLayout implements InventoryLayout {
 
     public static final InventoryButton PREVIOUS_PAGE = new InventoryButtonBuilder()
             .title(ChatColor.GOLD + "PREVIOUS PAGE")
-            .sound("ui.button.click")
+            .sound(new ComponentSound("ui.button.click"))
             .onInteract(l -> {
                 if (l.getGUI() instanceof Paginated) {
                     Paginated gui = ((Paginated) l.getGUI());
@@ -51,7 +52,7 @@ public abstract class PaginatedInventoryLayout implements InventoryLayout {
             .build();
     public static final InventoryButton NEXT_PAGE = new InventoryButtonBuilder()
             .title(ChatColor.GOLD + "NEXT PAGE")
-            .sound("ui.button.click")
+            .sound(new ComponentSound("ui.button.click"))
             .onInteract(l -> {
                 if (l.getGUI() instanceof Paginated) {
                     Paginated gui = ((Paginated) l.getGUI());

@@ -12,6 +12,7 @@
  */
 package de.erethon.vignette;
 
+import de.erethon.vignette.api.ComponentSound;
 import de.erethon.vignette.api.InventoryGUI;
 import de.erethon.vignette.api.PaginatedInventoryGUI;
 import de.erethon.vignette.api.VignetteAPI;
@@ -29,7 +30,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -84,7 +84,7 @@ public class InventoryListener implements Listener {
                 continue;
             }
             if (event.getClickedInventory() instanceof PlayerInventory) {
-                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY && !gui.isAllowInput()) {
                     event.setCancelled(true);
                 }
                 return;
@@ -92,6 +92,10 @@ public class InventoryListener implements Listener {
             InventoryButton button = gui.getButton(event.getCurrentItem());
             InventoryAction iAction = event.getAction();
             if (button == null) {
+                if (!gui.isAllowOutput()) {
+                    event.setCancelled(true);
+                    return;
+                }
                 if (MOVE_ACTIONS.contains(iAction)) {
                     fireMISE(gui, event);
                 }
@@ -115,8 +119,11 @@ public class InventoryListener implements Listener {
                 cancelled = button.isRightClickLocked();
             }
             event.setCancelled(cancelled);
-            if (button.getSound() != null) {
-                player.playSound(player.getLocation(), button.getSound(), 1f, 1f);
+
+            ComponentSound sound = button.getSound();
+
+            if (sound != null) {
+                player.playSound(player.getLocation(), sound.getSound(), sound.getVolume(), sound.getPitch());
             }
             if (button.getInteractionListener() != null) {
                 InteractionEvent ie = new InteractionEvent(gui, button, player, vAction);
@@ -133,20 +140,6 @@ public class InventoryListener implements Listener {
                 fireMISE(gui, event);
             }
             break;
-        }
-    }
-
-    @EventHandler
-    public void onInventoryDrag(InventoryDragEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-        Player player = (Player) event.getWhoClicked();
-        for (InventoryGUI gui : VignetteAPI.getCache(InventoryGUI.class)) {
-            if (gui.getViewers().contains(player)) {
-                event.setCancelled(true);
-                return;
-            }
         }
     }
 

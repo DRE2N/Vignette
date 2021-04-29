@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 public abstract class InventoryGUI extends AbstractGUI<InventoryGUI> {
 
     private MoveItemStackListener moveItemStackListener;
+    protected boolean allowInput = false, allowOutput = false;
 
     protected InventoryGUI() {
         super();
@@ -96,6 +97,38 @@ public abstract class InventoryGUI extends AbstractGUI<InventoryGUI> {
      */
     public InventoryButton getButton(ItemStack itemStack, Player contextPlayer) {
         return ((InventoryLayout) getLayout()).getButton(itemStack, contextPlayer);
+    }
+
+    /**
+     * Returns true if item inputs are allowed.
+     *
+     * @return true if item inputs are allowed
+     */
+    public boolean isAllowInput() {
+        return allowInput;
+    }
+
+    /**
+     * Sets if an item can be put into the inventory.
+     */
+    public void setAllowInput(boolean input) {
+        this.allowInput = input;
+    }
+
+    /**
+     * Returns true if item outputs are allowed.
+     *
+     * @return true if item outputs are allowed
+     */
+    public boolean isAllowOutput() {
+        return allowOutput;
+    }
+
+    /**
+     * Sets if an item can be dragged out of the inventory.
+     */
+    public void setAllowOutput(boolean output) {
+        this.allowOutput = output;
     }
 
     /**

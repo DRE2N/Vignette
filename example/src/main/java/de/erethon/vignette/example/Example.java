@@ -12,6 +12,7 @@
  */
 package de.erethon.vignette.example;
 
+import de.erethon.vignette.api.ComponentSound;
 import de.erethon.vignette.api.GUI;
 import de.erethon.vignette.api.InventoryGUI;
 import de.erethon.vignette.api.Paginated;
@@ -58,7 +59,7 @@ public class Example extends JavaPlugin {
                 .title(ChatColor.DARK_GREEN + "Test")
                 .lines("Lore1", "Lore2")
                 .icon(Material.RED_MUSHROOM)
-                .sound("ui.button.click")
+                .sound(new ComponentSound("ui.button.click"))
                 .onInteract(e -> e.getPlayer().sendMessage(e.getAction().toString()))
                 .build()
         );

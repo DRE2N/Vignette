@@ -12,6 +12,7 @@
  */
 package de.erethon.vignette.api.component;
 
+import de.erethon.vignette.api.ComponentSound;
 import de.erethon.vignette.api.action.InteractionListener;
 import de.erethon.vignette.api.context.ContextModifier;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.List;
 public abstract class ButtonBuilder<THIS extends ButtonBuilder<THIS, TYPE>, TYPE extends Button> {
 
     protected String title;
-    protected String sound;
+    protected ComponentSound sound;
     protected InteractionListener interactionListener;
     protected List<ContextModifier<TYPE>> contextModifiers = new ArrayList<>();
 
@@ -45,12 +46,23 @@ public abstract class ButtonBuilder<THIS extends ButtonBuilder<THIS, TYPE>, TYPE
     }
 
     /**
+     * Sets the sound played to the player when the button is clicked
+     *
+     * @param sound the sound
+     * @return the builder
+     */
+    public THIS sound(String sound) {
+        this.sound = new ComponentSound(sound);
+        return (THIS) this;
+    }
+
+    /**
      * Sets the sound String played to the player when the button is clicked
      *
      * @param sound the sound String
      * @return the builder
      */
-    public THIS sound(String sound) {
+    public THIS sound(ComponentSound sound) {
         this.sound = sound;
         return (THIS) this;
     }

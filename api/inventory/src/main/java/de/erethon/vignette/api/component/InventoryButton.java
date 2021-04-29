@@ -12,6 +12,7 @@
  */
 package de.erethon.vignette.api.component;
 
+import de.erethon.vignette.api.ComponentSound;
 import de.erethon.vignette.api.InventoryGUI;
 import de.erethon.vignette.api.action.InteractionListener;
 import de.erethon.vignette.api.context.ContextModifier;
@@ -33,8 +34,8 @@ import org.bukkit.inventory.meta.ItemMeta;
  */
 public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
 
-    private ItemStack itemStack;
-    private String sound;
+    private final ItemStack itemStack;
+    private ComponentSound sound;
     private boolean leftClickLocked = true, rightClickLocked = true;
     private InteractionListener interactionListener;
     private Set<StatusModifier<?>> statusModifiers = new HashSet<>();
@@ -97,6 +98,10 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
         rightClickLocked = button.rightClickLocked;
         interactionListener = button.interactionListener;
         contextModifiers = button.contextModifiers;
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
     }
 
     /**
@@ -202,12 +207,12 @@ public class InventoryButton implements Button<InventoryButton, InventoryGUI> {
     }
 
     @Override
-    public String getSound() {
+    public ComponentSound getSound() {
         return sound;
     }
 
     @Override
-    public void setSound(String sound) {
+    public void setSound(ComponentSound sound) {
         this.sound = sound;
     }
 

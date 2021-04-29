@@ -12,6 +12,7 @@
  */
 package de.erethon.vignette.api.component;
 
+import de.erethon.vignette.api.ComponentSound;
 import de.erethon.vignette.api.GUI;
 import de.erethon.vignette.api.action.InteractionListener;
 
@@ -45,14 +46,14 @@ public interface Button<THIS extends Button<THIS, TYPE>, TYPE extends GUI> exten
      *
      * @return the sound String played to the player when the button is clicked
      */
-    String getSound();
+    ComponentSound getSound();
 
     /**
      * Sets the sound String played to the player when the button is clicked.
      *
      * @param sound the sound String
      */
-    void setSound(String sound);
+    void setSound(ComponentSound sound);
 
     /**
      * Returns the InteractionListener attached to this button.
